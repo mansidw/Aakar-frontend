@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { PlusIcon, FolderIcon } from "lucide-react";
+import Navbar from "../basic/Navbar";
 
 export function Project() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -54,6 +55,7 @@ export function Project() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-black text-white overflow-hidden relative">
+      <Navbar />
       {/* Header with Create New Project Button */}
       <div className="relative z-10 container mx-auto px-6 py-8">
         <button
