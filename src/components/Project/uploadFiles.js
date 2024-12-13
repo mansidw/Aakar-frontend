@@ -20,7 +20,7 @@ const uploadFiles = async (files, projectId) => {
 
   try {
     // Axios POST request
-    const response = await axios.post("http://127.0.0.1:5000/uploads/", formData, {
+    const response = await axios.post("https://aakar-backend.onrender.com/uploads/", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

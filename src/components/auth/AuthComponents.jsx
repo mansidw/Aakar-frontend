@@ -107,7 +107,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://127.0.0.1:5000/users/login", {
+      const response = await axios.post("https://aakar-backend.onrender.com/users/login", {
         email: formData.email,
         password: formData.password,
       });
@@ -224,7 +224,7 @@ function Signup() {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const response = await axios.post("http://127.0.0.1:5000/users/", {
+        const response = await axios.post("https://aakar-backend.onrender.com/users/", {
           name: formData.email.match(/^[^@]+/)[0],
           email: formData.email,
           password: formData.password,

@@ -22,7 +22,7 @@ export function Project() {
       if (userId) {
         try {
           const response = await axios.get(
-            `http://127.0.0.1:5000/projects/user/${userId}`
+            `https://aakar-backend.onrender.com/projects/user/${userId}`
           );
           if (response && response.data && response.data.length > 0) {
             setProjects(response.data);
@@ -42,7 +42,7 @@ export function Project() {
     if (projectId) {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:5000/projects/${projectId}/files`
+          `https://aakar-backend.onrender.com/projects/${projectId}/files`
         );
         if (response && response.data) {
           console.log("response in files- ", response);
@@ -81,7 +81,7 @@ export function Project() {
     }
 
     try {
-      const response = await axios.post("http://127.0.0.1:5000/projects/", {
+      const response = await axios.post("https://aakar-backend.onrender.com/projects/", {
         user_id: localStorage.getItem("userId"),
         project_name: newProject.name,
       });
