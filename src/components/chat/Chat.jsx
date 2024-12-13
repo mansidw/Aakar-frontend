@@ -143,7 +143,7 @@ const ChatInterface = () => {
 
   const deleteSessionFromServer = async (sessionId) => {
     try {
-      const response = await fetch(`http://127.0.0.1:5000/chats/session/${sessionId}`, {
+      const response = await fetch(`hhttps://aakar-backend.onrender.com/chats/session/${sessionId}`, {
         method: "DELETE",
       });
       if (!response.ok) {

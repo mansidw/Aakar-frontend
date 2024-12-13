@@ -45,7 +45,6 @@ export function Project() {
           `https://aakar-backend.onrender.com/projects/${projectId}/files`
         );
         if (response && response.data) {
-          console.log("response in files- ", response);
           setSelectedFiles(response.data.files);
         } else {
           throw new Error("Error to get uploaded files");
@@ -85,7 +84,6 @@ export function Project() {
         user_id: localStorage.getItem("userId"),
         project_name: newProject.name,
       });
-      console.log("Response in Project creation - ", response);
       if (response) {
         localStorage.setItem("projectId", response.data.project_id);
         setProjects((prev) => [...prev, response.data]);
