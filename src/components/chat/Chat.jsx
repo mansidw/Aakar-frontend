@@ -8,10 +8,12 @@ import { generateReport } from "../chat/generateReport"; // Adjust path if neede
 // Fetch sessions for given user and project
 const fetchSessions = async (userId, projectId) => {
   try {
-    const response = await fetch(`https://aakar-backend.onrender.com/chats/sessions?user_id=${userId}&project_id=${projectId}`);
+    const response = await fetch(
+      `https://aakar-backend.onrender.com/chats/sessions?user_id=${userId}&project_id=${projectId}`
+    );
     const data = await response.json();
     // Sort sessions so the newest is at the top (descending by created_at)
-    data.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+    data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     return data;
   } catch (error) {
     console.error("Failed to fetch sessions:", error);
@@ -22,7 +24,9 @@ const fetchSessions = async (userId, projectId) => {
 // Fetch chats for a given session
 const fetchChatsInSession = async (sessionId) => {
   try {
-    const response = await fetch(`https://aakar-backend.onrender.com/chats/session/${sessionId}`);
+    const response = await fetch(
+      `https://aakar-backend.onrender.com/chats/session/${sessionId}`
+    );
     return await response.json();
   } catch (error) {
     console.error("Failed to fetch chats:", error);
@@ -93,7 +97,7 @@ const ChatInterface = () => {
     setIsLoading(true);
 
     const userMsg = { query: newMessage, format: null }; // user message on right
-    const typingMsg = { query: "AI is typing...", format: "TYPING" }; // special AI typing message
+    const typingMsg = { query: "AI is thinking...", format: "TYPING" }; // special AI typing message
 
     // Add user message and typing message at once
     setChats((prev) => [...prev, userMsg, typingMsg]);
@@ -101,7 +105,13 @@ const ChatInterface = () => {
     const tempMessage = newMessage; // store query
     setNewMessage(""); // Clear input
 
-    const response = await generateReport(tempMessage, userId, projectId, selectedType, selectedSession?.session_id);
+    const response = await generateReport(
+      tempMessage,
+      userId,
+      projectId,
+      selectedType,
+      selectedSession?.session_id
+    );
     setIsLoading(false);
 
     // Refetch sessions and chats after generating report
@@ -118,7 +128,9 @@ const ChatInterface = () => {
     }
 
     if (newSelectedSession && newSelectedSession.session_id) {
-      const serverChats = await fetchChatsInSession(newSelectedSession.session_id);
+      const serverChats = await fetchChatsInSession(
+        newSelectedSession.session_id
+      );
       setChats(serverChats);
     } else {
       // If still no session, just clear chats
@@ -143,9 +155,12 @@ const ChatInterface = () => {
 
   const deleteSessionFromServer = async (sessionId) => {
     try {
-      const response = await fetch(`hhttps://aakar-backend.onrender.com/chats/session/${sessionId}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `hhttps://aakar-backend.onrender.com/chats/session/${sessionId}`,
+        {
+          method: "DELETE",
+        }
+      );
       if (!response.ok) {
         console.error("Failed to delete session");
         return false;
@@ -156,18 +171,21 @@ const ChatInterface = () => {
       return false;
     }
   };
-  
+
   const deleteSession = async (sessionToDelete) => {
     const success = await deleteSessionFromServer(sessionToDelete.session_id);
     if (!success) return;
-  
-    setSessions((prev) => prev.filter((session) => session.session_id !== sessionToDelete.session_id));
+
+    setSessions((prev) =>
+      prev.filter(
+        (session) => session.session_id !== sessionToDelete.session_id
+      )
+    );
     if (selectedSession?.session_id === sessionToDelete.session_id) {
       setSelectedSession(null);
       setChats([]);
     }
   };
-  
 
   // Render each chat object
   // If format is null: user query (right)
@@ -206,15 +224,34 @@ const ChatInterface = () => {
         const url = base64ToBlobUrl(chat.file, "application/pdf");
         answerContent = (
           <div className="max-w-xl p-4 rounded-xl bg-white/10 backdrop-blur-md">
-            <iframe src={url} title="PDF Report" className="w-full h-64 mb-2"></iframe>
-            <a href={url} download="report.pdf" className="text-indigo-400 underline">Download report.pdf</a>
+            <iframe
+              src={url}
+              title="PDF Report"
+              className="w-full h-64 mb-2"
+            ></iframe>
+            <a
+              href={url}
+              download="report.pdf"
+              className="text-indigo-400 underline"
+            >
+              Download report.pdf
+            </a>
           </div>
         );
       } else if (chat.format === "DOCX") {
-        const url = base64ToBlobUrl(chat.file, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        const url = base64ToBlobUrl(
+          chat.file,
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        );
         answerContent = (
           <div className="max-w-xl p-4 rounded-xl bg-white/10 backdrop-blur-md">
-            <a href={url} download="report.docx" className="text-indigo-400 underline">Download report.docx</a>
+            <a
+              href={url}
+              download="report.docx"
+              className="text-indigo-400 underline"
+            >
+              Download report.docx
+            </a>
           </div>
         );
       } else if (chat.format === "MARKDOWN") {
@@ -235,7 +272,9 @@ const ChatInterface = () => {
         // Default text handling
         answerContent = (
           <div className="max-w-xl p-4 rounded-xl bg-white/10 backdrop-blur-md">
-            <ReactMarkdown>{chat.markdown_content || chat.query || "No content"}</ReactMarkdown>
+            <ReactMarkdown>
+              {chat.markdown_content || chat.query || "No content"}
+            </ReactMarkdown>
           </div>
         );
       }
@@ -259,6 +298,21 @@ const ChatInterface = () => {
     <div className="h-screen overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-900 to-black text-white flex">
       {/* Sidebar */}
       <div className="w-72 bg-white/10 backdrop-blur-md border-r border-white/20 p-4 flex flex-col">
+        {/* underline text go back to projects with arrow right icon*/}
+        <a href="/project" className="text-indigo-400 underline mb-4">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 25 25"
+            className="inline-block w-4 h-4 mr-1"
+            fill="currentColor"
+          >
+            <path
+              d="M24 12.001H2.914l5.294-5.295-.707-.707L1 12.501l6.5 6.5.707-.707-5.293-5.293H24v-1z"
+              data-name="Left"
+            />
+          </svg>
+          Go back to Projects
+        </a>
         <button
           onClick={createNewSession}
           className="w-full flex items-center justify-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 transform hover:scale-105"
@@ -313,9 +367,7 @@ const ChatInterface = () => {
         {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {chats.length > 0 ? (
-            <>
-              {renderChats()}
-            </>
+            <>{renderChats()}</>
           ) : (
             <div className="h-full flex items-center justify-center text-gray-400">
               No messages yet. Start by typing a query.
@@ -370,7 +422,9 @@ const ChatInterface = () => {
               type="text"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              onKeyPress={(e) => (e.key === "Enter" && !isLoading) && handleSendMessage()}
+              onKeyPress={(e) =>
+                e.key === "Enter" && !isLoading && handleSendMessage()
+              }
               placeholder="Type your message..."
               className="
                 flex-1
