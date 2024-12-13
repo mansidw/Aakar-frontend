@@ -107,15 +107,22 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:5000/login",
-        formData
-      );
-      localStorage.setItem("username", response.data.user.email);
-      localStorage.setItem("accessToken", response.data.user.idToken);
-      navigate("/project");
+      const response = await axios.post("http://127.0.0.1:5000/users/login", {
+        email: formData.email,
+        password: formData.password,
+      });
+
+      console.log("Response in login - ", response);
+      if (response) {
+        localStorage.setItem("username", response.data.name);
+        localStorage.setItem("userEmail", response.data.email);
+        localStorage.setItem("userId", response.data.user_id);
+        navigate("/project");
+      } else {
+        throw "Login Issue Error";
+      }
     } catch (error) {
-      alert(error.response.data.error);
+      alert(error);
     }
   };
 
@@ -217,13 +224,20 @@ function Signup() {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const response = await axios.post(
-          "http://127.0.0.1:5000/signup",
-          formData
-        );
-        navigate("/login");
+        const response = await axios.post("http://127.0.0.1:5000/users/", {
+          name: formData.email.match(/^[^@]+/)[0],
+          email: formData.email,
+          password: formData.password,
+        });
+
+        if (response) {
+          console.log("Response- ", response);
+          navigate("/login");
+        } else {
+          throw "User Creation error";
+        }
       } catch (error) {
-        alert(error.response.data.error);
+        alert(error);
       }
     }
   };
