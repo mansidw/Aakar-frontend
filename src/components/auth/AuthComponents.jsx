@@ -119,7 +119,7 @@ function Login() {
         localStorage.setItem("userId", response.data.user_id);
         navigate("/project");
       } else {
-        throw "Login Issue Error";
+        throw new Error("Login Issue Error");
       }
     } catch (error) {
       alert(error);
@@ -234,7 +234,7 @@ function Signup() {
           console.log("Response- ", response);
           navigate("/login");
         } else {
-          throw "User Creation error";
+          throw new Error("User Creation error");
         }
       } catch (error) {
         alert(error);

@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { PlusIcon, FolderIcon } from "lucide-react";
 import Navbar from "../basic/Navbar";
+import axios from "axios";
+import uploadFiles from "./uploadFiles";
+
 
 export function Project() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -9,6 +12,29 @@ export function Project() {
   const [selectedProject, setSelectedProject] = useState(null);
 
   const [newProject, setNewProject] = useState({ name: "", description: "" });
+
+  useEffect(() => {
+    const getProjectsByUserId = async () => {
+      const userId = localStorage.getItem("userId");
+
+      if (userId) {
+        try {
+          const response = await axios.get(
+            `http://127.0.0.1:5000/projects/user/${userId}`
+          );
+          if (response && response.data && response.data.length > 0) {
+            setProjects(response.data);
+          } else {
+            throw new Error("Error to get Projects");
+          }
+        } catch (error) {
+          alert(error);
+        }
+      }
+    };
+
+    getProjectsByUserId();
+  }, []);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => {
@@ -21,36 +47,56 @@ export function Project() {
     setNewProject((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!newProject.name) {
       alert("Project name is required!");
       return;
     }
-    setProjects((prev) => [
-      ...prev,
-      { ...newProject, id: Date.now(), files: [] },
-    ]);
+
+    try {
+      const response = await axios.post("http://127.0.0.1:5000/projects/", {
+        user_id: localStorage.getItem("userId"),
+        project_name: newProject.name,
+      });
+      console.log("Response in Project creation - ", response);
+      if (response) {
+        localStorage.setItem("projectId", response.data.project_id);
+        setProjects((prev) => [...prev, response.data]);
+      } else {
+        throw new Error("Project creation Error");
+      }
+    } catch (error) {
+      alert(error);
+    }
+
     closeModal();
   };
 
   const handleProjectClick = (project) => {
     setSelectedProject(project);
+    localStorage.setItem("projectId", project.project_id);
   };
 
-  const handleFileUpload = (e) => {
+
+
+  const handleFileUpload = async (e) => {
     const files = Array.from(e.target.files);
-    setProjects((prevProjects) =>
-      prevProjects.map((project) =>
-        project.id === selectedProject.id
-          ? { ...project, files: [...project.files, ...files] }
-          : project
-      )
-    );
+    // setProjects((prevProjects) =>
+    //   prevProjects.map((project) =>
+    //     project.id === selectedProject.id
+    //       ? { ...project, files: [...project.files, ...files] }
+    //       : project
+    //   )
+    // );
+
+    const projectId = localStorage.getItem('projectId');
+
+    await uploadFiles(files, projectId);
+
     alert(
-      `Uploaded ${files.length} file(s) to project: ${selectedProject.name}`
+      `Uploaded ${files.length} file(s) to project: ${selectedProject.project_name}`
     );
-    setSelectedProject(null);
   };
 
   return (
@@ -71,18 +117,18 @@ export function Project() {
         {/* Sidebar with Project List */}
         <aside className="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-xl">
           <h3 className="text-2xl font-bold mb-4 text-white">Projects</h3>
-          {projects.length === 0 ? (
+          {projects && projects?.length === 0 ? (
             <p className="text-gray-300">No projects created yet.</p>
           ) : (
             <ul className="space-y-2">
               {projects.map((project) => (
                 <li
-                  key={project.id}
+                  key={project.project_id}
                   onClick={() => handleProjectClick(project)}
                   className="flex items-center p-3 bg-white/5 hover:bg-white/10 rounded-lg cursor-pointer transition duration-300 transform hover:scale-105"
                 >
                   <FolderIcon className="mr-3 text-indigo-400" size={24} />
-                  <span>{project.name}</span>
+                  <span>{project.project_name}</span>
                 </li>
               ))}
             </ul>
@@ -94,7 +140,7 @@ export function Project() {
           {selectedProject ? (
             <div className="file-upload">
               <h3 className="text-2xl font-bold mb-4 text-white">
-                Upload Files to {selectedProject.name}
+                Upload Files to {selectedProject.project_name}
               </h3>
               <div className="bg-white/5 border border-white/20 p-4 rounded-lg">
                 <input
