@@ -30,8 +30,11 @@ const uploadFiles = async (files, projectId) => {
     if (response.status === 200) {
       console.log("Upload Success:", response.data.success);
       console.log("Upload Errors:", response.data.errors);
+      return true;
     } else {
       console.error("Unexpected response:", response);
+      return false;
+
     }
   } catch (error) {
     // Handle errors

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { SendIcon, MessageCircleIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useLocation } from "react-router-dom";
+import { generateReport } from "./generateReport";
 
 // Mock data and service function (replace with actual API calls)
 const fetchSessions = async (userId) => {
@@ -52,7 +53,7 @@ const ChatInterface = () => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chats]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
 
     // Placeholder for sending message logic
@@ -66,10 +67,12 @@ const ChatInterface = () => {
     setNewMessage("");
 
     // Simulate AI response (replace with actual backend call)
+    const content = await generateReport(newMessage, userId, projectId);
+
     setTimeout(() => {
       const aiResponse = {
         id: Date.now() + 1,
-        content: "This is a sample AI response.",
+        content: content,
         sender: "ai",
       };
       setChats((prevChats) => [...prevChats, aiResponse]);
@@ -175,6 +178,8 @@ const ChatInterface = () => {
                 >
                   {chat.content}
                 </div>
+
+                
               </div>
             ))
           ) : (

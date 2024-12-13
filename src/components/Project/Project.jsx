@@ -11,7 +11,8 @@ export function Project() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
-
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const projectId = localStorage.getItem("projectId");
   const [newProject, setNewProject] = useState({ name: "", description: "" });
 
   useEffect(() => {
@@ -36,6 +37,30 @@ export function Project() {
 
     getProjectsByUserId();
   }, []);
+
+  const getUserUploadedFiles = async () => {
+    if (projectId) {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:5000/projects/${projectId}/files`
+        );
+        if (response && response.data) {
+          console.log("response in files- ", response);
+          setSelectedFiles(response.data.files);
+        } else {
+          throw new Error("Error to get uploaded files");
+        }
+      } catch (error) {
+        alert(error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (projectId) {
+      getUserUploadedFiles();
+    }
+  }, [projectId]);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => {
@@ -81,21 +106,19 @@ export function Project() {
 
   const handleFileUpload = async (e) => {
     const files = Array.from(e.target.files);
-    // setProjects((prevProjects) =>
-    //   prevProjects.map((project) =>
-    //     project.id === selectedProject.id
-    //       ? { ...project, files: [...project.files, ...files] }
-    //       : project
-    //   )
-    // );
 
     const projectId = localStorage.getItem("projectId");
 
-    await uploadFiles(files, projectId);
+    const fileUpload = await uploadFiles(files, projectId);
 
-    alert(
-      `Uploaded ${files.length} file(s) to project: ${selectedProject.project_name}`
-    );
+    if (fileUpload) {
+      alert(
+        `Uploaded ${files.length} file(s) to project: ${selectedProject.project_name}`
+      );
+      getUserUploadedFiles();
+    }
+
+    e.target.value = "";
   };
 
   return (
@@ -144,57 +167,39 @@ export function Project() {
                 </h3>
                 <div className="bg-white/5 border border-white/20 rounded-lg">
                   <ul className="divide-y divide-white/10">
-                    {[
-                      {
-                        id: 1,
-                        name: "sales_report_2024.csv",
-                        size: "2.5 MB",
-                        type: "CSV",
-                      },
-                      {
-                        id: 2,
-                        name: "customer_data.xlsx",
-                        size: "4.7 MB",
-                        type: "Excel",
-                      },
-                      {
-                        id: 3,
-                        name: "quarterly_analysis.pdf",
-                        size: "1.2 MB",
-                        type: "PDF",
-                      },
-                      {
-                        id: 4,
-                        name: "marketing_insights.docx",
-                        size: "0.8 MB",
-                        type: "Word",
-                      },
-                    ].map((file) => (
-                      <li
-                        key={file.id}
-                        className="p-4 flex justify-between items-center hover:bg-white/10 transition duration-300"
-                      >
-                        <div className="flex items-center space-x-4">
-                          <div className="bg-indigo-600/30 p-2 rounded-lg">
-                            <span className="text-indigo-400 font-semibold">
-                              {file.type}
-                            </span>
-                          </div>
-                          <div>
-                            <p className="font-medium">{file.name}</p>
-                            <p className="text-sm text-gray-400">{file.size}</p>
-                          </div>
-                        </div>
-                        <button
-                          className="text-gray-400 hover:text-white transition duration-300"
-                          // Add download or view functionality
-                          // onClick={() => handleFileDownload(file)}
+                    {selectedFiles.length > 0 &&
+                      selectedFiles.map((file) => (
+                        <li
+                          key={file.id}
+                          className="p-4 flex justify-between items-center hover:bg-white/10 transition duration-300"
                         >
-                          <DownloadIcon size={20} />
-                        </button>
-                      </li>
-                    ))}
+                          <div className="flex items-center space-x-4">
+                            <div className="bg-indigo-600/30 p-2 rounded-lg">
+                              <span className="text-indigo-400 font-semibold">
+                                {file.file_type}
+                              </span>
+                            </div>
+                            <div>
+                              <p className="font-medium">{file.name}</p>
+                              <p className="text-sm text-gray-400">
+                                {file.size}
+                              </p>
+                            </div>
+                          </div>
+                          <button
+                            className="text-gray-400 hover:text-white transition duration-300"
+                            // Add download or view functionality
+                            // onClick={() => handleFileDownload(file)}
+                          >
+                            <DownloadIcon size={20} />
+                          </button>
+                        </li>
+                      ))}
                   </ul>
+
+                  {selectedFiles.length === 0 && (
+                    <p className="text-gray-300">No files uploaded yet.</p>
+                  )}
                 </div>
               </div>
               <div className="file-upload">
@@ -213,7 +218,7 @@ export function Project() {
                   onClick={() =>
                     navigate("/chat", {
                       state: {
-                        userId: localStorage.getItem("username"),
+                        userId: localStorage.getItem("userId"),
                         projectId: localStorage.getItem("projectId"),
                       },
                     })
