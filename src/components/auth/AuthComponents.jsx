@@ -224,7 +224,7 @@ function Signup() {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const response = await axios.post("https://aakar-backend.onrender.com/users/", {
+        const response = await axios.post("https://aakar-backend.onrender.comusers/", {
           name: formData.email.match(/^[^@]+/)[0],
           email: formData.email,
           password: formData.password,
