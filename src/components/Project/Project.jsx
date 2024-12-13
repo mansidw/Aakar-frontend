@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { PlusIcon, FolderIcon } from "lucide-react";
+import { PlusIcon, FolderIcon, DownloadIcon } from "lucide-react";
 import Navbar from "../basic/Navbar";
 import axios from "axios";
 import uploadFiles from "./uploadFiles";
-
+import { useNavigate } from "react-router-dom";
 
 export function Project() {
+  const navigate = useNavigate("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -78,8 +79,6 @@ export function Project() {
     localStorage.setItem("projectId", project.project_id);
   };
 
-
-
   const handleFileUpload = async (e) => {
     const files = Array.from(e.target.files);
     // setProjects((prevProjects) =>
@@ -90,7 +89,7 @@ export function Project() {
     //   )
     // );
 
-    const projectId = localStorage.getItem('projectId');
+    const projectId = localStorage.getItem("projectId");
 
     await uploadFiles(files, projectId);
 
@@ -138,17 +137,92 @@ export function Project() {
         {/* Main Content Area */}
         <main className="md:col-span-2 bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-xl">
           {selectedProject ? (
-            <div className="file-upload">
-              <h3 className="text-2xl font-bold mb-4 text-white">
-                Upload Files to {selectedProject.project_name}
-              </h3>
-              <div className="bg-white/5 border border-white/20 p-4 rounded-lg">
-                <input
-                  type="file"
-                  multiple
-                  onChange={handleFileUpload}
-                  className="block w-full text-sm text-gray-300 file:mr-4 file:rounded-lg file:border-0 file:bg-indigo-600 file:text-white file:py-2 file:px-4"
-                />
+            <div className="space-y-6">
+              <div className="existing-files">
+                <h3 className="text-2xl font-bold mb-4 text-white">
+                  Existing Files in {selectedProject.project_name}
+                </h3>
+                <div className="bg-white/5 border border-white/20 rounded-lg">
+                  <ul className="divide-y divide-white/10">
+                    {[
+                      {
+                        id: 1,
+                        name: "sales_report_2024.csv",
+                        size: "2.5 MB",
+                        type: "CSV",
+                      },
+                      {
+                        id: 2,
+                        name: "customer_data.xlsx",
+                        size: "4.7 MB",
+                        type: "Excel",
+                      },
+                      {
+                        id: 3,
+                        name: "quarterly_analysis.pdf",
+                        size: "1.2 MB",
+                        type: "PDF",
+                      },
+                      {
+                        id: 4,
+                        name: "marketing_insights.docx",
+                        size: "0.8 MB",
+                        type: "Word",
+                      },
+                    ].map((file) => (
+                      <li
+                        key={file.id}
+                        className="p-4 flex justify-between items-center hover:bg-white/10 transition duration-300"
+                      >
+                        <div className="flex items-center space-x-4">
+                          <div className="bg-indigo-600/30 p-2 rounded-lg">
+                            <span className="text-indigo-400 font-semibold">
+                              {file.type}
+                            </span>
+                          </div>
+                          <div>
+                            <p className="font-medium">{file.name}</p>
+                            <p className="text-sm text-gray-400">{file.size}</p>
+                          </div>
+                        </div>
+                        <button
+                          className="text-gray-400 hover:text-white transition duration-300"
+                          // Add download or view functionality
+                          // onClick={() => handleFileDownload(file)}
+                        >
+                          <DownloadIcon size={20} />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              <div className="file-upload">
+                <h3 className="text-2xl font-bold mb-4 text-white">
+                  Upload Files to {selectedProject.project_name}
+                </h3>
+                <div className="bg-white/5 border border-white/20 p-4 rounded-lg">
+                  <input
+                    type="file"
+                    multiple
+                    onChange={handleFileUpload}
+                    className="block w-full text-sm text-gray-300 file:mr-4 file:rounded-lg file:border-0 file:bg-indigo-600 file:text-white file:py-2 file:px-4"
+                  />
+                </div>
+                <button
+                  onClick={() =>
+                    navigate("/chat", {
+                      state: {
+                        userId: localStorage.getItem("username"),
+                        projectId: localStorage.getItem("projectId"),
+                      },
+                    })
+                  }
+                  className="ml-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 transform hover:scale-105"
+                  style={{ marginTop: 20 }}
+                >
+                  Start Chat
+                </button>
               </div>
             </div>
           ) : (
