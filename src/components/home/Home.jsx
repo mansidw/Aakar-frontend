@@ -294,7 +294,7 @@ const Home = () => {
             className="text-5xl md:text-7xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-600"
             style={{ color: "white" }}
           >
-            आकर AI
+            आकार AI
           </h1>
           <p className="text-xl text-gray-300 max-w-xl">
             Transform Raw Data into Intelligent, Actionable Insights with
