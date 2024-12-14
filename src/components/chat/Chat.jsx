@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { SendIcon, MessageCircleIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
 import DOMPurify from "dompurify";
 import { generateReport } from "../chat/generateReport"; // Adjust path if needed
 
@@ -257,16 +259,16 @@ const ChatInterface = () => {
       } else if (chat.format === "MARKDOWN") {
         answerContent = (
           <div className="max-w-xl p-4 rounded-xl bg-white/10 backdrop-blur-md">
-            <ReactMarkdown>{chat.markdown_content}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{chat.markdown_content}</ReactMarkdown>
+
           </div>
         );
       } else if (chat.format === "HTML") {
         const sanitizedHTML = DOMPurify.sanitize(chat.markdown_content || "");
         answerContent = (
-          <div
-            className="max-w-xl p-4 rounded-xl bg-white/10 backdrop-blur-md prose"
-            dangerouslySetInnerHTML={{ __html: sanitizedHTML }}
-          />
+          <div className="max-w-xl p-4 rounded-xl bg-white/10 backdrop-blur-md">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{chat.markdown_content}</ReactMarkdown>
+        </div>
         );
       } else {
         // Default text handling
