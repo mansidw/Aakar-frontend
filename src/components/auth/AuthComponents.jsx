@@ -107,10 +107,13 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("https://aakar-backend.onrender.com/users/login", {
-        email: formData.email,
-        password: formData.password,
-      });
+      const response = await axios.post(
+        "https://aakar-backend.onrender.com/users/login",
+        {
+          email: formData.email,
+          password: formData.password,
+        }
+      );
 
       console.log("Response in login - ", response);
       if (response) {
@@ -224,11 +227,14 @@ function Signup() {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const response = await axios.post("https://aakar-backend.onrender.comusers/", {
-          name: formData.email.match(/^[^@]+/)[0],
-          email: formData.email,
-          password: formData.password,
-        });
+        const response = await axios.post(
+          "https://aakar-backend.onrender.com/users/",
+          {
+            name: formData.email.match(/^[^@]+/)[0],
+            email: formData.email,
+            password: formData.password,
+          }
+        );
 
         if (response) {
           console.log("Response- ", response);
