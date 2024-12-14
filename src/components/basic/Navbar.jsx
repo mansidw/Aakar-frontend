@@ -8,6 +8,7 @@ function Navbar() {
     localStorage.clear();
     navigate("/login");
   };
+
   return (
     <nav className="bg-white/10 backdrop-blur-md border-b border-white/20 px-6 py-4 flex justify-between items-center">
       <div className="flex items-center space-x-4">
@@ -17,10 +18,15 @@ function Navbar() {
         >
           आकर AI
         </div>
-        {/* <div className="flex items-center space-x-2 text-gray-300">
-          <UserIcon size={20} className="text-indigo-400" />
-          <span>Hi, Mansi</span>
-        </div> */}
+      </div>
+
+      <div className="flex items-center space-x-2 text-gray-300 absolute left-1/2 transform -translate-x-1/2">
+        <UserIcon size={20} className="text-indigo-400" />
+        <span>
+          Hi,{" "}
+          {localStorage.getItem("username") ||
+            localStorage.getItem("userEmail")}
+        </span>
       </div>
 
       <div className="flex items-center space-x-4">
