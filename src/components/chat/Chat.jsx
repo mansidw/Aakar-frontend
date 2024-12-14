@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import DOMPurify from "dompurify";
 import { generateReport } from "../chat/generateReport"; // Adjust path if needed
+import Navbar from "../basic/Navbar";
 
 // Fetch sessions for given user and project
 const fetchSessions = async (userId, projectId) => {
@@ -358,11 +359,14 @@ const ChatInterface = () => {
       {/* Chat Area */}
       <div className="flex-1 flex flex-col">
         {/* Chat Header */}
-        <div className="p-4 border-b border-white/20 bg-white/10 backdrop-blur-md">
+        <Navbar />
+        {/* <div className="p-4 border-b border-white/20 bg-white/10 backdrop-blur-md">
           <h2 className="text-2xl font-bold">
-            {selectedSession?.title || "New or Select a Chat"}
+            {selectedSession?.title ||
+              localStorage.getItem("username") ||
+              localStorage.getItem("userEmail")}
           </h2>
-        </div>
+        </div> */}
 
         {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
