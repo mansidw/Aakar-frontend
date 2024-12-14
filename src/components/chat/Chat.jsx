@@ -340,7 +340,7 @@ const ChatInterface = () => {
             >
               <div className="flex items-center space-x-2">
                 <MessageCircleIcon size={20} className="text-indigo-400" />
-                <span>{session.title || `Session ${session.session_id}`}</span>
+                <span>{session.title.slice(0,20).concat(" ...") || `Session ${session.session_id}`}</span>
               </div>
               <button
                 onClick={(e) => {
